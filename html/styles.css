@@ -1,0 +1,15 @@
+body {
+  font-family: Georgia, "Times New Roman", Times, serif;
+  color: purple;
+  background-color: #fcfcfc; 
+  }
+h2 {
+  align-text: center;  
+  font-family: Helvetica, Geneva, Arial, SunSans-Regular, sans-serif 
+  }
+div {
+    text-align: center;
+    display: block;
+    margin: auto;
+    width: 40%;
+}
