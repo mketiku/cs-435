@@ -86,7 +86,7 @@ def parse_headers(request):
 
 def main(argv):
     port = int(argv[0])
-
+    host = int(argv[1])
     # create an INET, STREAMing socket
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
