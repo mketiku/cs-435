@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: UTF-8 -*-
 
 '''Application serves a simple web directory.'''
 __author__ = "Michael Ketiku"
@@ -38,8 +39,8 @@ permitted_types = {
     'png': 'image/png'
 }
 
-response_header = ''
-response = ''
+# response_header = ''
+# response = ''
 
 
 def parse_headers(request):
@@ -57,11 +58,18 @@ def handle_request(request):
     """Disassemble the request and create a response message."""
     req = request.split("\n")[0]  # create a list of items from the first line of the message
     headers = parse_headers(request)  # create a dictionary of header/value pairs
-    global response
+
     # use the items() method to iterate over keys and values in a dictionary
     for h, v in headers.items():
         print("{} => {}".format(h, v))
 
+    if req !='':
+        method = req.split(' ')[0]
+        print(method)
+        requested_file = req.split(' ')[1]
+    else:
+        method= 'GET'
+        requested_file = '/index.html'
     # check HTTP method is allowed and, if not, create response
 
     # check for if-modified-since and respond if not modified
@@ -74,17 +82,16 @@ def handle_request(request):
 
     # finally
     try:
-        requested_file = "index.html"
+        # requested_file = "index.html"
         filename = "{}{}".format(wwwroot, requested_file)
-        # print(requested_file)
+
         # determine content-type (can also be done inline when creating a response message)
 
         # the pythonic way to open files ... will close files automatically
-        with open(filename) as f:
+        with open(filename, mode='rb') as f:
             # read the file and append it to the response message
             # use 'f.read()' to read the file contents
-            response = response_header + f.read()
-
+            response = f.read()
     except IOError:
         # 404 response ... file not found
         # remove *pass* and add 404 code here
@@ -92,12 +99,13 @@ def handle_request(request):
 
     modify_date = os.path.getmtime(filename)
     print(modify_date)
+
     # Check if asset is avaialble and the method is correct, serve the asset
 
-    if os.path.isfile(filename)== True:
-        print("HTTP/1.1 200 OK\n",requested_file)
+    if os.path.isfile(filename):
+        print("HTTP/1.1 200 OK\n")
     else:
-        print("HTTP/1.1 400 Not Found\n",requested_file)
+        print("HTTP/1.1 400 Not Found\n")
 
     # response += "Date:" + today + "\n"
     # response += "Server: HTTP Server\n"
@@ -117,12 +125,12 @@ def main(argv):
     print('Listening for connections on port:', port)
     while 1:
         conn, addr = s.accept()
-        message = conn.recv(1024)
+        message = conn.recv(1024).decode('UTF-8','replace').strip()
 
         # decode the message and respond
-        response = handle_request(message.decode('UTF-8'))
-
-        conn.send(bytes(response, 'UTF-8'))
+        response = handle_request(message)
+        conn.send(response)
+        # conn.send(bytes(response, 'UTF-8'))
         conn.close()
 
     # signal our intent to close the socket and then close it
