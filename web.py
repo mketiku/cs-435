@@ -9,7 +9,7 @@ import sys
 format = "%a, %d %b %Y %H:%M:%S %Z"
 
 # we'll store html and other files in an html directory
-wwwroot = "{}/html/".format(os.getcwd())
+wwwroot = "{}/www/".format(os.getcwd())
 
 # dictionaries to look up valid content-types and response code messages
 # referencing codes['200'] will return 'OK'
@@ -66,8 +66,8 @@ def handle_request(request):
     else:
         print("HTTP/1.1 400 Not Found\n",requested_file)
 
-    response += "Date:" + today + "\n"
-    response += "Server: HTTP Server\n"
+    # response += "Date:" + today + "\n"
+    # response += "Server: HTTP Server\n"
 
     return response
 
