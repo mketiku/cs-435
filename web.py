@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+'''Application serves a simple web directory.'''
+__author__ = "Michael Ketiku"
+__project__ = "SimpleHttpServer"
+___email__ = "mketiku@gmail.com"
+___status__ = "final"
+
 import datetime
 import os
 import socket
@@ -13,13 +19,39 @@ wwwroot = "{}/www/".format(os.getcwd())
 
 # dictionaries to look up valid content-types and response code messages
 # referencing codes['200'] will return 'OK'
-content_types = {'html': 'text/html', 'css': 'text/css', 'js': 'application/x-javascript', 'jpg': 'image/jpeg',
-                 'gif': 'image/gif', 'png': 'image/png'}
-codes = {'200': 'OK', '304': 'Not Modified', '404': 'Not Found', '405': 'Method Not Allowed'}
+
+permitted_methods = {
+    'GET'
+}
+response_codes = {
+    '200': 'OK',
+    '304': 'Not Modified',
+    '404': 'Not Found',
+    '405': 'Method Not Allowed'
+}
+permitted_types = {
+    'html': 'text/html',
+    'css': 'text/css',
+    'js': 'application/x-javascript',
+    'jpg': 'image/jpeg',
+    'gif': 'image/gif',
+    'png': 'image/png'
+}
 
 response_header = ''
 response = ''
 
+
+def parse_headers(request):
+    """Return a dictionary in the form Header => Value for all headers in *request*."""
+    headers = {}
+    for line in request.split('\n')[1:]:
+        # blank line separates headers from content
+        if line == '\r':
+            break
+        header_line = line.partition(':')
+        headers[header_line[0].lower()] = header_line[2].strip()
+    return headers
 
 def handle_request(request):
     """Disassemble the request and create a response message."""
@@ -42,26 +74,27 @@ def handle_request(request):
 
     # finally
     try:
-        # requested_file = req[0]
-        requested_file = request[4:]
+        requested_file = "index.html"
         filename = "{}{}".format(wwwroot, requested_file)
-        print(requested_file)
+        # print(requested_file)
         # determine content-type (can also be done inline when creating a response message)
 
         # the pythonic way to open files ... will close files automatically
         with open(filename) as f:
             # read the file and append it to the response message
             # use 'f.read()' to read the file contents
-            # response = (response_header + f.read()).join()
-             response =  "".join(response_header, f.read())
+            response = response_header + f.read()
+
     except IOError:
         # 404 response ... file not found
         # remove *pass* and add 404 code here
-        print("HTTP/1.1 404 Not Found\n")
         pass
 
+    modify_date = os.path.getmtime(filename)
+    print(modify_date)
     # Check if asset is avaialble and the method is correct, serve the asset
-    if os.path.exists(filename):
+
+    if os.path.isfile(filename)== True:
         print("HTTP/1.1 200 OK\n",requested_file)
     else:
         print("HTTP/1.1 400 Not Found\n",requested_file)
@@ -71,29 +104,17 @@ def handle_request(request):
 
     return response
 
-
-def parse_headers(request):
-    """Return a dictionary in the form Header => Value for all headers in *request*."""
-    headers = {}
-    for line in request.split('\n')[1:]:
-        # blank line separates headers from content
-        if line == '\r':
-            break
-        header_line = line.partition(':')
-        headers[header_line[0].lower()] = header_line[2].strip()
-    return headers
-
-
 def main(argv):
-    port = int(argv[0])
-    host = int(argv[1])
+    port = int(argv[0]) # arbitrary non-privileged port
+    host = ''  # symbolic name meaning all available interfaces
+
     # create an INET, STREAMing socket
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    # now bind the server to the port
-    s.bind(('', port))
+    # bind the server to the port
+    s.bind((host, port))
     s.listen(1)
-    print('Listening for connections')
+    print('Listening for connections on port:', port)
     while 1:
         conn, addr = s.accept()
         message = conn.recv(1024)
@@ -115,4 +136,4 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         main(sys.argv[1:])
     else:
-        main([43500])
+        main([9000])
