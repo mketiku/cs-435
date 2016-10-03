@@ -19,7 +19,7 @@ format = "%a, %d %b %Y %H:%M:%S %Z"
 wwwroot = "{}/www/".format(os.getcwd())
 
 # dictionaries to look up valid content-types and response code messages
-# referencing codes['200'] will return 'OK'
+# referencing codes['200'] will renurn 'OK'
 
 permitted_methods = {
     'GET'
@@ -60,6 +60,8 @@ def handle_request(request):
     headers = parse_headers(request)  # create a dictionary of header/value pairs
 
     # use the items() method to iterate over keys and values in a dictionary
+    # print('>  Request type:  {}'.format(req))
+
     for h, v in headers.items():
         print("{} => {}".format(h, v))
 
@@ -69,46 +71,47 @@ def handle_request(request):
         requested_file = req.split(' ')[1]
     else:
         method= 'GET'
-        requested_file = '/index.html'
+        print(method)
+        requested_file = '/'
+
+    if requested_file.endswith('/'):
+        requested_file = requested_file + 'index.html'
     # check HTTP method is allowed and, if not, create response
 
     # check for if-modified-since and respond if not modified
 
     # to read the datetime string in a request we can specify the formatting and create a datetime object
     # datetime.datetime.strptime(v, format)
+    # response_header = today +
 
     # to get a datetime object for *right now*
     today = datetime.datetime.today()
+    if method in permitted_methods:
+        try:
+            # requested_file = "index.html"
+            filename = "{}{}".format(wwwroot, requested_file)
+            if os.path.isfile(filename):
+                print("HTTP/1.1 200 OK\n")
+            # determine content-type (can also be done inline when creating a response message)
 
-    # finally
-    try:
-        # requested_file = "index.html"
-        filename = "{}{}".format(wwwroot, requested_file)
+            # the pythonic way to open files ... will close files automatically
+            with open(filename, mode='rb') as f:
+                # read the file and append it to the response message
+                # use 'f.read()' to read the file contents
+                response = f.read()
+        except IOError as e:
+            # 404 response ... file not found
+            # remove *pass* and add 404 code here
+            print("HTTP/1.1 400 Not Found\n")
 
-        # determine content-type (can also be done inline when creating a response message)
 
-        # the pythonic way to open files ... will close files automatically
-        with open(filename, mode='rb') as f:
-            # read the file and append it to the response message
-            # use 'f.read()' to read the file contents
-            response = f.read()
-    except IOError:
-        # 404 response ... file not found
-        # remove *pass* and add 404 code here
-        pass
+        modify_date = os.path.getmtime(filename)
+        print(modify_date)
 
-    modify_date = os.path.getmtime(filename)
-    print(modify_date)
+        # Check if asset is avaialble and the method is correct, serve the asset
 
-    # Check if asset is avaialble and the method is correct, serve the asset
-
-    if os.path.isfile(filename):
-        print("HTTP/1.1 200 OK\n")
-    else:
-        print("HTTP/1.1 400 Not Found\n")
-
-    # response += "Date:" + today + "\n"
-    # response += "Server: HTTP Server\n"
+        # response += "Date:" + today + "\n"
+        # response += "Server: HTTP Server\n"
 
     return response
 
@@ -125,10 +128,12 @@ def main(argv):
     print('Listening for connections on port:', port)
     while 1:
         conn, addr = s.accept()
-        message = conn.recv(1024).decode('UTF-8','replace').strip()
+        # message = conn.recv(1024).decode('UTF-8','replace').strip()
+        message = conn.recv(1024)
 
         # decode the message and respond
-        response = handle_request(message)
+        # response = handle_request(message) #Alternate Way 
+        response = handle_request(message.decode('UTF-8'))
         conn.send(response)
         # conn.send(bytes(response, 'UTF-8'))
         conn.close()
