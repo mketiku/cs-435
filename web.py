@@ -13,7 +13,8 @@ import socket
 import sys
 
 # datetime format
-format = "%a, %d %b %Y %H:%M:%S %Z"
+obj_time_format = "%a, %d %b %Y %H:%M:%S %Z"
+req_time_format = '%Y-%m-%d %H:%M:%S.%f'
 
 # we'll store html and other files in an html directory
 wwwroot = "{}/www/".format(os.getcwd())
@@ -36,10 +37,11 @@ permitted_types = {
     'js': 'application/x-javascript',
     'jpg': 'image/jpeg',
     'gif': 'image/gif',
-    'png': 'image/png'
+    'png': 'image/png',
+    'ico': 'image/ico'
 }
 
-# response_header = ''
+# response_header = 'hello moto'
 # response = ''
 
 
@@ -59,59 +61,79 @@ def handle_request(request):
     req = request.split("\n")[0]  # create a list of items from the first line of the message
     headers = parse_headers(request)  # create a dictionary of header/value pairs
 
-    # use the items() method to iterate over keys and values in a dictionary
-    # print('>  Request type:  {}'.format(req))
-
-    for h, v in headers.items():
-        print("{} => {}".format(h, v))
-
+    print('>  Request:  {}'.format(req))
+    # check HTTP method is allowed and, if not, create response
     if req !='':
         method = req.split(' ')[0]
-        print(method)
+        print(">  Method:",method)
         requested_file = req.split(' ')[1]
     else:
         method= 'GET'
-        print(method)
-        requested_file = '/'
+        print(">  Method:",method)
+        requested_file = "/"
 
-    if requested_file.endswith('/'):
-        requested_file = requested_file + 'index.html'
-    # check HTTP method is allowed and, if not, create response
+    if requested_file.endswith("/"):
+        print(">  Method:",method)
+        requested_file = requested_file + "index.html"
+
+    print('>  Object: ' + requested_file.replace("/",""))
+
+    # use the items() method to iterate over keys and values in a dictionary
+    for h, v in headers.items():
+        print("{} => {}".format(h, v))
+
+
 
     # check for if-modified-since and respond if not modified
 
     # to read the datetime string in a request we can specify the formatting and create a datetime object
     # datetime.datetime.strptime(v, format)
-    # response_header = today +
-
-    # to get a datetime object for *right now*
+    # # response_header = today +
+    #
+    # # to get a datetime object for *right now*
     today = datetime.datetime.today()
+    #
+    # response_header = today
+    # print(today)
     if method in permitted_methods:
-        try:
-            # requested_file = "index.html"
-            filename = "{}{}".format(wwwroot, requested_file)
-            if os.path.isfile(filename):
-                print("HTTP/1.1 200 OK\n")
-            # determine content-type (can also be done inline when creating a response message)
+            # determine the content type
+        print(">  Method:",method, "Allowed")
+        content_type = os.path.splitext(requested_file)[1].replace(".","")
+        if content_type in permitted_types:
+            print(">  Content Type:",permitted_types[content_type], "Allowed")
+            try:
+                # requested_file = "index.html"
+                filename = "{}{}".format(wwwroot, requested_file)
 
-            # the pythonic way to open files ... will close files automatically
-            with open(filename, mode='rb') as f:
-                # read the file and append it to the response message
-                # use 'f.read()' to read the file contents
-                response = f.read()
-        except IOError as e:
-            # 404 response ... file not found
-            # remove *pass* and add 404 code here
-            print("HTTP/1.1 400 Not Found\n")
+                # the pythonic way to open files ... will close files automatically
+                with open(filename, mode='rb') as f:
+                    # read the file and append it to the response message
+                    # use 'f.read()' to read the file contents
+                    if os.path.isfile(filename):
+                        print(">  Response: HTTP/1.1 200 OK\n")
+                    response = f.read()
+                    # response = bytes(response_header, 'UTF-8') + f.read()
 
 
-        modify_date = os.path.getmtime(filename)
-        print(modify_date)
+                    modify_date = datetime.datetime.fromtimestamp(os.path.getmtime(filename))
+                    print(">  Last Modified:", modify_date)
+                    if 'if-modified-since' in h:
+                        check_date = datetime.datetime.strptime(h['if-modified-since'], req_time_format)
+                        elapsed_time = check_date - modify_date
+                        if elapsed_time >  datetime.timedelta(seconds=0):
+                            print(">  Code: 304 Not Modified")
 
-        # Check if asset is avaialble and the method is correct, serve the asset
+            except (IOError,OSError) as e:
+                # 404 response ... file not found
+                # remove *pass* and add 404 code here
+                print(">  Response: HTTP/1.1 400 Not Found\n")
+                # response = '/404.html'
 
-        # response += "Date:" + today + "\n"
-        # response += "Server: HTTP Server\n"
+        else:
+            print(">  Content Type:",permitted_types[content_type], "Not Allowed")
+    else:
+        print(">  Method:",method, "Not Allowed")
+
 
     return response
 
@@ -132,7 +154,7 @@ def main(argv):
         message = conn.recv(1024)
 
         # decode the message and respond
-        # response = handle_request(message) #Alternate Way 
+        # response = handle_request(message) #Alternate Way
         response = handle_request(message.decode('UTF-8'))
         conn.send(response)
         # conn.send(bytes(response, 'UTF-8'))
