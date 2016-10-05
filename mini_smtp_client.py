@@ -9,34 +9,48 @@ import sys
 __author__ = "Michael Ketiku"
 __project__ = "minismtpclient"
 ___email__ = "mketiku@gmail.com"
-___status__ = "final"
+___status__ = "stable"
+
+
+# define the port and host we want to connect to
+port = 25
+host = 'bumail.butler.edu'
+
+greeting = 'ehlo ' + host + '\r\n'
+sender = 'MAIL FROM: mketiku@butler.edu\r\n'
+receiver = 'RCPT TO: mketiku@butler.edu\r\n'
+subject = 'Subject: waddup\r\n'
+data = 'DATA\r\n'
+text = 'hey how is it going'
+period = '\r.\r'
+quit = 'QUIT\r\n'
+
 
 def main(argv):
-    port = argv[0]
+    # create an INET, STREAMing socket
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        # connect the client to given host and port
+        s.connect((host, port))
 
-    #create an INET, STREAMing socket
-    s = socket.socket(
-    socket.AF_INET, socket.SOCK_STREAM)
-    # now bind the server to the port
-    s.bind(('', port))
-    s.listen(1)
-    print('Listening for messages')
-    while 1:
-        conn, addr = s.accept()
-        message = conn.recv(1024)
-        response = message.decode('UTF-8').upper()
-        conn.send(bytes(response, 'UTF-8'))
-        conn.close()
+        # s.create_connection(host, port)
+        # message = ("{}\r\n{}\r\n{}\r\n{}\r\n{}\r\n{}".format(greeting, sender, receiver, "data", subject, text))
+        message = [
+            greeting, sender, receiver, data, subject, text, period, quit]
+        for item in message:
+            respon = s.recv(4096)
+            print(item)
+            s.sendall(item.encode('utf-8'))
+            print(str(respon, 'utf-8').upper())
+            print('=>   Response:', repr(respon))
 
+        s.shutdown(socket.SHUT_RDWR)
+        s.close()
     # signal our intent to close the socket and then close it
     # the shutdown step is _essentially_ optional
-    s.shutdown(socket.SHUT_RDWR)
-    s.close()
-
 
 if __name__ == "__main__":
     # pass arguments if any exist, otherwise send some defaults (not complete)
     if len(sys.argv) > 1:
         main(sys.argv[1:])
     else:
-        main( [43500] )
+        main([port])
