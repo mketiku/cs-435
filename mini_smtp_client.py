@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 
-import os
+# import os
 import socket
 import sys
 
@@ -16,13 +16,11 @@ ___status__ = "stable"
 port = 25
 host = 'bumail.butler.edu'
 
-greeting = 'ehlo ' + host + '\r\n'
+greeting = 'EHLO ' + host + '\r\n'
 sender = 'MAIL FROM: mketiku@butler.edu\r\n'
 receiver = 'RCPT TO: mketiku@butler.edu\r\n'
-subject = 'Subject: waddup\r\n'
 data = 'DATA\r\n'
-text = 'hey how is it going'
-period = '\r.\r'
+text = 'Subject: Checking In\r\nHey Michael, How is it going?\r\n.\r\n '
 quit = 'QUIT\r\n'
 
 
@@ -33,15 +31,13 @@ def main(argv):
         s.connect((host, port))
 
         # s.create_connection(host, port)
-        # message = ("{}\r\n{}\r\n{}\r\n{}\r\n{}\r\n{}".format(greeting, sender, receiver, "data", subject, text))
         message = [
-            greeting, sender, receiver, data, subject, text, period, quit]
+            greeting, sender, receiver, data, text, quit]
         for item in message:
             respon = s.recv(4096)
+            print(str(respon, 'utf-8').upper())
             print(item)
             s.sendall(item.encode('utf-8'))
-            print(str(respon, 'utf-8').upper())
-            print('=>   Response:', repr(respon))
 
         s.shutdown(socket.SHUT_RDWR)
         s.close()
