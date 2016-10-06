@@ -13,10 +13,10 @@ ___status__ = "stable"
 
 
 # define the port and host we want to connect to
-port = 25
-host = 'bumail.butler.edu'
+PORT = 25
+HOST = 'bumail.butler.edu'
 
-greeting = 'EHLO ' + host + '\r\n'
+greeting = 'EHLO ' + HOST + '\r\n'
 sender = 'MAIL FROM: mketiku@butler.edu\r\n'
 receiver = 'RCPT TO: mketiku@butler.edu\r\n'
 data = 'DATA\r\n'
@@ -28,7 +28,7 @@ def main(argv):
     # create an INET, STREAMing socket
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         # connect the client to given host and port
-        s.connect((host, port))
+        s.connect((HOST, PORT))
 
         # s.create_connection(host, port)
         message = [
@@ -49,4 +49,4 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         main(sys.argv[1:])
     else:
-        main([port])
+        main([PORT])
