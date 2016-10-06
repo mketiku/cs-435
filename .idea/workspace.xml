@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="339d66f8-ecdf-4e3b-9924-37e5923dee73" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mini_smtp_client.py" afterPath="$PROJECT_DIR$/mini_smtp_client.py" />
-    </list>
+    <list default="true" id="339d66f8-ecdf-4e3b-9924-37e5923dee73" name="Default" comment="" />
     <ignored path="cs-435.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
@@ -45,8 +42,8 @@
       <file leaf-file-name="mini_smtp_client.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/mini_smtp_client.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="25">
-              <caret line="31" column="51" selection-start-line="31" selection-start-column="51" selection-end-line="31" selection-end-column="51" />
+            <state relative-caret-position="7">
+              <caret line="29" column="51" selection-start-line="29" selection-start-column="51" selection-end-line="29" selection-end-column="51" />
               <folding>
                 <element signature="e#60#73#0" expanded="true" />
               </folding>
@@ -454,8 +451,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/mini_smtp_client.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="25">
-          <caret line="31" column="51" selection-start-line="31" selection-start-column="51" selection-end-line="31" selection-end-column="51" />
+        <state relative-caret-position="7">
+          <caret line="29" column="51" selection-start-line="29" selection-start-column="51" selection-end-line="29" selection-end-column="51" />
           <folding>
             <element signature="e#60#73#0" expanded="true" />
           </folding>
