@@ -1,5 +1,7 @@
 #!/usr/bin/python
-# imported from http://blog.wachowicz.eu/?p=256
+# forked from http://blog.wachowicz.eu/?p=256
+# All rights belong to the author. 
+
 
 import socket  # Networking support
 import signal  # Signal support (server shutdown on signal receive)

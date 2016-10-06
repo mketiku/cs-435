@@ -9,6 +9,7 @@ import sys
 __author__ = "Michael Ketiku"
 __project__ = "minismtpclient"
 ___email__ = "mketiku@gmail.com"
+___date__ = "10-03-16"
 ___status__ = "stable"
 
 

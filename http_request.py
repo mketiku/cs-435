@@ -1,7 +1,16 @@
 #!/usr/bin/env python3
+
 import socket
 
-#create an INET, STREAMing socket
+
+''' Simple client for a http get request.'''
+__author__ = "Michael Ketiku"
+__project__ = "http_request_client"
+___email__ = "mketiku@gmail.com"
+___date__ = "09-29-16"
+___status__ = "stable"
+#create an INET, STREA
+Ming socket
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 host = 'www.google.com'
